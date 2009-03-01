@@ -26,6 +26,7 @@ module DataMapper
       def call(target)
         field_value = target.validation_property_value(field_name)
         return true if @options[:allow_nil] && field_value.nil?
+        return true if @options[:allow_blank] && field_value.blank?
 
         field_value = '' if field_value.nil?
 
@@ -70,7 +71,8 @@ module DataMapper
       # greater than or within a certain range (depending upon the options
       # you specify).
       #
-      # @option :allow_nil<Boolean> true/false (default is true)
+      # @option :allow_nil<Boolean> true/false (default is false)
+      # @option :allow_blank<Boolean> true/false (default is false)
       # @option :minimum    ensures that the attribute's length is greater than
       #   or equal to the supplied value
       # @option :min        alias for :minimum

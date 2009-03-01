@@ -21,11 +21,13 @@ module DataMapper
         super(field_name, options)
         @field_name, @options = field_name, options
         @options[:allow_nil] = false unless @options.has_key?(:allow_nil)
+        @options[:allow_blank] = false unless @options.has_key?(:allow_blank)
       end
 
       def call(target)
         value = target.validation_property_value(field_name)
         return true if @options[:allow_nil] && value.nil?
+        return true if @options[:allow_blank] && value.blank?
 
         validation = @options[:as] || @options[:with]
 
@@ -63,7 +65,8 @@ module DataMapper
       # that you want to validate against. You may also specify your own format
       # via a Proc or Regexp passed to the the :as or :with options.
       #
-      # @option :allow_nil<Boolean>         true/false (default is true)
+      # @option :allow_nil<Boolean>         true/false (default is false)
+      # @option :allow_blank<Boolean>         true/false (default is false)
       # @option :as<Format, Proc, Regexp>   the pre-defined format, Proc or Regexp to validate against
       # @option :with<Format, Proc, Regexp> an alias for :as
       #

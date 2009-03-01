@@ -10,8 +10,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :id, Serial
         property :name, String
         property :domain, String #, :unique => true
+        property :ticker, String
 
         validates_is_unique :domain, :allow_nil => true
+        validates_is_unique :ticker, :allow_blank => true
       end
 
       class ::User
@@ -32,6 +34,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       repository do
          Organisation.new(:id=>1, :name=>'Org One', :domain=>'taken').save
          Organisation.new(:id=>2, :name=>'Org Two', :domain=>'two').save
+         Organisation.new(:id=>3, :name=>'Org Three', :ticker=>'ORRRG').save
 
          User.new(:id=>1, :organisation_id=>1, :user_name=>'guy').save
       end
@@ -62,6 +65,21 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
         o = Organisation.new(:id=>2, :name=>"Org Two", :domain=>"not_taken")
         o.should be_valid
+      end
+    end
+
+    it "should not even check if :allow_blank is true" do
+      repository do
+        o = Organisation.get!(1)
+        o.should be_valid
+
+        o = Organisation.new(:name=>"Org Three", :ticker=>"ORRRG")
+        o.should_not be_valid
+        o.errors.on(:ticker).should include('Ticker is already taken')
+
+        o = Organisation.new(:name=>"Org Two", :ticker=>"ERRRG")
+        o.should be_valid
+
       end
     end
 

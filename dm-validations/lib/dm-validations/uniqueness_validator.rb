@@ -18,6 +18,7 @@ module DataMapper
         scope = Array(@options[:scope])
 
         return true if @options[:allow_nil] && target.send(field_name).nil?
+        return true if @options[:allow_blank] && target.send(field_name).blank?
 
         repository_name = target.repository.name
 

@@ -29,6 +29,9 @@ module DataMapper
         return true if @options[:allow_nil] && field_value.nil?
         return false if !@options[:allow_nil] && field_value.nil?
 
+        return true if @options[:allow_blank] && field_value.blank?
+        return false if !@options[:allow_blank] && field_value.blank?
+
         if target.class.properties.has_property?(field_name)
           return true unless target.attribute_dirty?(field_name)
         end
@@ -48,6 +51,7 @@ module DataMapper
       # attributes.
       #
       # @option :allow_nil<Boolean> true/false (default is true)
+      # @option :allow_blank<Boolean> true/false (default is false)
       # @option :confirm<Symbol>    the attribute that you want to validate
       #                             against (default is firstattr_confirmation)
       #

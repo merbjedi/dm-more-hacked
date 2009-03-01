@@ -70,6 +70,25 @@ describe DataMapper::Validate::ConfirmationValidator do
     canoe.errors.on(:name).should include('Name does not match the confirmation')
   end
 
+  it "should not pass validation with a blank value when specified to and :allow_blank is set to false" do
+    class ::Canoe
+      validators.clear!
+      validates_is_confirmed :name, :allow_blank => false
+    end
+    canoe = Canoe.new :name => "", :name_confirmation => ""
+    canoe.should_not be_valid
+    canoe.errors.on(:name).should include('Name does not match the confirmation')
+  end
+
+  it "should pass validation with a blank value when specified and :allow_blank is set to true" do
+    class ::Canoe
+      validators.clear!
+      validates_is_confirmed :name, :allow_blank => true
+    end
+    canoe = Canoe.new :name => ""
+    canoe.should be_valid
+  end
+
   it "should allow the name of the confirmation field to be set" do
     class ::Canoe
       validators.clear!

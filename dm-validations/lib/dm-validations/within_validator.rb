@@ -16,6 +16,7 @@ module DataMapper
       def call(target)
         value = target.send(field_name)
         return true if @options[:allow_nil] && value.nil?
+        return true if @options[:allow_blank] && value.blank?
         return true if @options[:set].include?(value)
 
         set = @options[:set]

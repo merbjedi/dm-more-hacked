@@ -14,6 +14,12 @@ class Hillary # :nodoc:
   property :id, Integer, :serial => true
   property :amount_1, Float, :auto_validation => false, :default => 0.01
   validates_is_number :amount_1
+
+  property :amount_2, String, :auto_validation => false
+  validates_is_number :amount_2, :allow_nil => true
+
+  property :amount_3, String, :auto_validation => false
+  validates_is_number :amount_3, :allow_blank => true
 end
 
 describe DataMapper::Validate::NumericValidator do
@@ -64,6 +70,27 @@ describe DataMapper::Validate::NumericValidator do
   it "should validate if a default fufills the requirements" do
     h = Hillary.new
     h.should be_valid
+  end
+
+  it "should not valid if nil and allow_nil is set to true" do
+    h = Hillary.new
+    h.should be_valid
+
+    h.amount_2 = "not_a_number"
+    h.should_not be_valid
+    h.errors.on(:amount_2).should include('Amount 2 must be a number')
+  end
+
+  it "should be valid if blank and allow_blank is set to true" do
+    h = Hillary.new
+    h.should be_valid
+
+    h.amount_3 = ""
+    h.should be_valid
+
+    h.amount_3 = "not_a_number"
+    h.should_not be_valid
+    h.errors.on(:amount_3).should include('Amount 3 must be a number')
   end
 
   describe 'auto validation' do

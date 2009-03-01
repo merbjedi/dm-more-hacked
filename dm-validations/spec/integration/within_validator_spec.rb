@@ -34,6 +34,13 @@ describe DataMapper::Validate::WithinValidator do
       property :nullable, Integer, :auto_validation => false
       validates_within :nullable, :set => (1..5), :allow_nil => true
     end
+
+    class ::Blankable
+      include DataMapper::Resource
+      property :id, Integer, :serial => true
+      property :blankable, Integer, :auto_validation => false
+      validates_within :blankable, :set => (1..5), :allow_blank => true
+    end
   end
 
   it "should validate a value on an instance of a resource within a predefined
@@ -75,5 +82,18 @@ describe DataMapper::Validate::WithinValidator do
 
     nullable.nullable = 3
     nullable.should be_valid
+  end
+
+  it "should allow a blank value if :allow_blank is true" do
+    blankable = Blankable.new
+
+    blankable.blankable = ""
+    blankable.should be_valid
+
+    blankable.blankable = 11
+    blankable.should_not be_valid
+
+    blankable.blankable = 3
+    blankable.should be_valid
   end
 end

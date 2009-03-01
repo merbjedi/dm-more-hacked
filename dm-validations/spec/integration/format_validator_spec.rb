@@ -11,6 +11,7 @@ describe DataMapper::Validate::FormatValidator do
       property :email,    String, :auto_validation => false
       property :username, String, :auto_validation => false
       property :url,      String, :auto_validation => false
+      property :phone_number, String, :auto_validation => false
 
       # this is a trivial example
       validates_format :doc_no, :with => lambda { |code|
@@ -21,6 +22,7 @@ describe DataMapper::Validate::FormatValidator do
       validates_format :url, :as => :url
 
       validates_format :username, :with => /[a-z]/, :message => 'Username must have at least one letter', :allow_nil => true
+      validates_format :phone_number, :with => /\((\d{3})\)\s+(\d{3})-(\d{4})/, :message => "Invalid phone number", :allow_blank => true
     end
   end
 
@@ -41,6 +43,20 @@ describe DataMapper::Validate::FormatValidator do
 
     bol.doc_no = 'B123456X12'
     bol.should be_valid
+  end
+
+  it "should only validate the format of a value with :allow_blank => true if a non blank value is set" do
+    bol = BillOfLading.new(valid_attributes)
+    bol.should be_valid
+
+    # make sure the blank value still works
+    bol.phone_number = ""
+    bol.should be_valid
+
+    # make sure it still validates if set
+    bol.phone_number = "invalid_number"
+    bol.should_not be_valid
+    bol.errors.on(:phone_number).should include("Invalid phone number")
   end
 
   describe "RFC2822 compatible email addresses" do
